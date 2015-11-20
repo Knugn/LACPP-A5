@@ -3,7 +3,7 @@ package org.uu.lacpp15.g3.mapreduce.framework;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class DirectoryByteFileIterator extends DirectoryFileIterator<byte[]> {
+public class DirectoryByteFileIterator extends DirectoryFilesIterator<byte[]> {
 
 	public DirectoryByteFileIterator(String path) throws IOException {
 		super(path);

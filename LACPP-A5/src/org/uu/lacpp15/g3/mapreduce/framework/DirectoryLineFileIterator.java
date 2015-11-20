@@ -5,7 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.List;
 
-public class DirectoryLineFileIterator extends DirectoryFileIterator<List<String>> {
+public class DirectoryLineFileIterator extends DirectoryFilesIterator<List<String>> {
 	
 	Charset charset;
 	

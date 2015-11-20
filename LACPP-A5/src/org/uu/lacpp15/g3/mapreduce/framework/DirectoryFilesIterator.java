@@ -3,13 +3,13 @@ package org.uu.lacpp15.g3.mapreduce.framework;
 import java.io.File;
 import java.io.IOException;
 
-public abstract class DirectoryFileIterator<V> implements KeyValueIterator<String, V>{
+public abstract class DirectoryFilesIterator<V> implements KeyValueIterator<String, V>{
 	
 	File dir;
 	File[] dirFiles;
 	int fileIdx = -1;
 	
-	public DirectoryFileIterator(String path) throws IOException {
+	public DirectoryFilesIterator(String path) throws IOException {
 		dir = new File(path);
 		if (!dir.isDirectory())
 			throw new IllegalArgumentException("Given path is not a directory.");
