@@ -12,73 +12,69 @@ public class CommonFriends {
 	}
 
 
-	public class GraphConversionMapper implements Mapper<String, String, String, String>{
+	public class GraphConversionMapper implements Mapper<String, String, String, Integer>{
+		int n;
+
+		GraphConversionMapper(int n){
+			this.n = n;
+		}
 
 		@Override
 		public void map(String key, String value,
-				KeyValueEmitter<String, String> emitter) {
-
+				KeyValueEmitter<String, Integer> emitter) {
+			//input is A person han all his/her friends
+			value.replaceAll("[^0-9]+", " ");
 			String[] values = value.split(" ");
-			String first = values[0];
-			for (int i = 2; i < values.length; i++) {
-				String newKey;
-				if (first.compareTo(values[i]) > 0){
-					newKey = values[i] + first;
-				}else{
-					newKey = first + values[i];
-				}
-				
-				String friends = "";
-				for(String otherfriend: values){
-					if (otherfriend.compareTo("#") == 0){
-						continue;
+			int value1 = Integer.parseInt(values[0]);
+			int value2 = Integer.parseInt(values[1]);
+			for (int i = 1;  i < n + 1; i++){
+				if (value1 != i && value2 != i){
+					String outKey = "";
+					if (value1 < i){
+						outKey = i + " " + value1;
 					}
-					if(otherfriend != values[i]){
-						friends += otherfriend + " ";
+					else{
+						outKey = value1 + " " + i;
 					}
-				}
-				if (friends.compareTo("") != 0){
-					emitter.emit(newKey, friends);
+					emitter.emit(outKey, value2);
+
+					outKey = "";
+					if (value2 < i){
+						outKey = i + " " + value2;
+					}
+					else{
+						outKey = value2 + " " + i;
+					}
+					emitter.emit(outKey, value1);
 				}
 			}
 		}
+	}		
 
 
-	}
 
-
-	public class GraphConversionReducer implements Reducer<String, String, String, String>
+	public class GraphConversionReducer implements Reducer<String, Integer, String, String>
 	{
 		@Override
-		public void reduce(String key, Iterable<String> values,
-			KeyValueEmitter<String, String> emitter) {
-			
-			
-			
-			String[] frineds = new String[2];
+		public void reduce(String key, Iterable<Integer> values,
+				KeyValueEmitter<String, String> emitter) {
+			String ans = key + " #";
 			int counter = 0;
-			for(String value: values){
-				frineds[counter] = value;
-				counter++;
-				
-			}
-			if (counter == 1){
-				return;
-			}
-			String ans = key;
-			String[] friends1 = frineds[0].split(" ");
-			String[] friends2 = frineds[1].split(" ");
-			//if sorted this cloud be made faster!
-			for(String friend1: friends1){
-				for(String friend2: friends2){
-					if (friend1 == friend2){
-						ans += " " + friend1;
-						break;
+			for (Integer value : values) {
+				int internalCounter = 0;
+				for (Integer value2 : values) {
+					if (internalCounter > counter){
+						if (value == value2){
+							ans += " " + value;
+						}
 					}
-				}	
+					internalCounter++;
+				}
+				counter++;
 			}
 			emitter.emit(key, ans);
 		}
-	
+
 	}
+
 }
