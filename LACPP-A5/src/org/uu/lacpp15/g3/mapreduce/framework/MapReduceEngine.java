@@ -4,16 +4,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class MapReduceEngine {
 	Thread engineSupervisor;
-	ForkJoinPool mappers, reducers;
+	//ForkJoinPool mappers, reducers;
+	ExecutorService mapExecutor, reduceExecutor;
 	
 	
 	public MapReduceEngine(int nMapper, int nReducers) {
-		mappers = new ForkJoinPool(nMapper);
-		reducers = new ForkJoinPool(nReducers);
+		//mappers = new ForkJoinPool(nMapper);
+		//reducers = new ForkJoinPool(nReducers);
+		mapExecutor = Executors.newFixedThreadPool(nMapper);
+		reduceExecutor = Executors.newFixedThreadPool(nReducers);
+	}
+	
+	public Future<Boolean> submitJob(MapReduceJob job) {
+		//TODO
+		return null;
 	}
 	
 	public void runJob(MapReduceJob job) {

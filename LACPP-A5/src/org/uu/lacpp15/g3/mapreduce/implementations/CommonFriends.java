@@ -3,6 +3,7 @@ package org.uu.lacpp15.g3.mapreduce.implementations;
 import org.uu.lacpp15.g3.mapreduce.framework.KeyValueEmitter;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
 import org.uu.lacpp15.g3.mapreduce.framework.Reducer;
+import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
 
 public class CommonFriends {
 
@@ -53,11 +54,11 @@ public class CommonFriends {
 
 
 
-	public class GraphConversionReducer implements Reducer<String, Integer, String, String>
+	public class GraphConversionReducer implements Reducer<String, Integer, String>
 	{
 		@Override
 		public void reduce(String key, Iterable<Integer> values,
-				KeyValueEmitter<String, String> emitter) {
+				ValueEmitter<String> emitter) {
 			String ans = key + " #";
 			int counter = 0;
 			for (Integer value : values) {
@@ -72,7 +73,7 @@ public class CommonFriends {
 				}
 				counter++;
 			}
-			emitter.emit(key, ans);
+			emitter.emit(ans);
 		}
 
 	}

@@ -3,6 +3,7 @@ package org.uu.lacpp15.g3.mapreduce.implementations;
 import org.uu.lacpp15.g3.mapreduce.framework.KeyValueEmitter;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
 import org.uu.lacpp15.g3.mapreduce.framework.Reducer;
+import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
 
 public class WordCount {
 
@@ -24,17 +25,17 @@ public class WordCount {
 	}
 
 	
-	public class WordCountReducer implements Reducer<String, Integer, String, Integer>
+	public class WordCountReducer implements Reducer<String, Integer, Integer>
 	{
 		@Override
 		public void reduce(String key, Iterable<Integer> values,
-				KeyValueEmitter<String, Integer> emitter) {
+				ValueEmitter<Integer> emitter) {
 			// TODO Auto-generated method stub
 		int sum = 0;
 			for(Integer value: values){
-				sum =+ value;
+				sum += value;
 			}
-			emitter.emit(key, sum);
+			emitter.emit(sum);
 		}
 	}
 }

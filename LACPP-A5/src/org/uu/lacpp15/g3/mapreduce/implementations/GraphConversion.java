@@ -3,6 +3,7 @@ package org.uu.lacpp15.g3.mapreduce.implementations;
 import org.uu.lacpp15.g3.mapreduce.framework.KeyValueEmitter;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
 import org.uu.lacpp15.g3.mapreduce.framework.Reducer;
+import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
 
 public class GraphConversion {
 
@@ -31,17 +32,17 @@ public class GraphConversion {
 	}
 
 	
-	public class GraphConversionReducer implements Reducer<Integer, Integer, Integer, String>
+	public class GraphConversionReducer implements Reducer<Integer, Integer, String>
 	{
 		@Override
 		public void reduce(Integer key, Iterable<Integer> values,
-				KeyValueEmitter<Integer, String> emitter) {
+				ValueEmitter<String> emitter) {
 			// TODO Auto-generated method stub
 		String neighbor = key + " # ";
 			for(Integer value: values){
 				neighbor += " " + value;
 			}
-			emitter.emit(key, neighbor);
+			emitter.emit(neighbor);
 		}
 	}
 }
