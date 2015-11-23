@@ -12,11 +12,11 @@ import java.util.Map;
  * @param <K> Key type
  * @param <V> Value type
  */
-public class ToMapEmitter<K, V> implements KeyValueEmitter<K, V> {
+public class ToMultivaluedMapEmitter<K, V> implements KeyValueEmitter<K, V> {
 	
 	Map<K, List<V>>	map;
 	
-	public ToMapEmitter(Map<K, List<V>> map) {
+	public ToMultivaluedMapEmitter(Map<K, List<V>> map) {
 		setMap(map);
 	}
 	

@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
-public class ConcurrentToMapEmitter <K,V> implements KeyValueEmitter<K,V> {
+public class ToMultivaluedConcurrentMapEmitter <K,V> implements KeyValueEmitter<K,V> {
 	
 	private ConcurrentMap<K,List<V>> map;
 	
-	public ConcurrentToMapEmitter(ConcurrentMap<K, List<V>> map) {
+	public ToMultivaluedConcurrentMapEmitter(ConcurrentMap<K, List<V>> map) {
 		super();
 		if (map == null)
 			throw new IllegalArgumentException("map must not be null.");
