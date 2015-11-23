@@ -20,22 +20,44 @@ public class MapReduceEngine {
 	ExecutorService mapExecutor, reduceExecutor;
 	
 	public MapReduceEngine(int nMappers, int nReducers) {
-		this.jobCompletionService = new ExecutorCompletionService<>(Executors.newSingleThreadExecutor());
 		this.nMappers = nMappers;
 		this.mapExecutor = Executors.newFixedThreadPool(nMappers);
 		this.nReducers = nReducers;
 		this.reduceExecutor = Executors.newFixedThreadPool(nReducers);
 	}
 	
-	public <K1,V1,K2,V2,V3> Future<?> submitJob(MapReduceJob<K1,V1,K2,V2,V3> job) {
+	/**
+	 * Submits a job to run asynchronously from the calling thread. Two use case scenarios when you
+	 * would want to use this method are:
+	 * <ul>
+	 * <li>The calling thread wants to do some other work while the MapReduce job is processing.</li>
+	 * <li>The engine is shared by multiple threads.</li>
+	 * </ul>
+	 * Be aware that the first time that this method is called on an engine, it will spawn a
+	 * supervisor thread an can therefore have some additional overhead in the first call.
+	 * 
+	 * @param job The job to be run.
+	 * @return A future representing the completion of the job. Calling {@link Future#get()} will
+	 *         block and return null when the work has completed.
+	 */
+	public synchronized <K1,V1,K2,V2,V3> Future<?> submitJob(MapReduceJob<K1,V1,K2,V2,V3> job) {
+		if (jobCompletionService == null)
+			this.jobCompletionService = new ExecutorCompletionService<>(Executors.newSingleThreadExecutor());
 		return jobCompletionService.submit(new RunnableMapReduceJob<>(job), null);
 	}
 	
+	/**
+	 * Runs a job synchronously by using the calling thread as a supervisor of the job. Use this
+	 * method to run jobs if the engine is used by a single thread that doesn't need/wish to do
+	 * something else while the job is running.
+	 * 
+	 * @param job The job to be run.
+	 */
 	public <K1,V1,K2,V2,V3> void runJob(MapReduceJob<K1,V1,K2,V2,V3> job) {
 		new RunnableMapReduceJob<>(job).run();
 	}
 	
-	class RunnableMapReduceJob<K1,V1,K2,V2,V3> implements Runnable {
+	public class RunnableMapReduceJob<K1,V1,K2,V2,V3> implements Runnable {
 		
 		MapReduceJob<K1,V1,K2,V2,V3> job;
 		
