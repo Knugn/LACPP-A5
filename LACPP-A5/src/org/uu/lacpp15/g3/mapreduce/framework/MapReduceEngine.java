@@ -55,7 +55,7 @@ public class MapReduceEngine {
 		}
 		
 		private ConcurrentMap<K2,List<V2>> runMappers() {
-			ConcurrentToMapEmitter<K2,V2> emitter = new ConcurrentToMapEmitter<>(new ConcurrentHashMap<K2,List<V2>>());
+			ToMultivaluedConcurrentMapEmitter<K2,V2> emitter = new ToMultivaluedConcurrentMapEmitter<>(new ConcurrentHashMap<K2,List<V2>>());
 			CompletionService<Map<K2,List<V2>>> mapperCompletionService = new ExecutorCompletionService<>(mapExecutor);
 			for (KeyValueIterator<K1,V1> iter : job.getIn().iterators(nMappers)) {
 				mapperCompletionService.submit(new RunnableMapper(iter, emitter), null);
