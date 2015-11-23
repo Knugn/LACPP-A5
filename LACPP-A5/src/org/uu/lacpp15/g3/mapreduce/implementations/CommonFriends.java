@@ -1,5 +1,8 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.uu.lacpp15.g3.mapreduce.framework.KeyValueEmitter;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
 import org.uu.lacpp15.g3.mapreduce.framework.Reducer;
@@ -23,11 +26,13 @@ public class CommonFriends {
 		@Override
 		public void map(String key, String value,
 				KeyValueEmitter<String, Integer> emitter) {
+			
 			//input is A person han all his/her friends
 			value.replaceAll("[^0-9]+", " ");
 			String[] values = value.split(" ");
 			int value1 = Integer.parseInt(values[0]);
 			int value2 = Integer.parseInt(values[1]);
+			//send 
 			for (int i = 1;  i < n + 1; i++){
 				if (value1 != i && value2 != i){
 					String outKey = "";
@@ -57,25 +62,23 @@ public class CommonFriends {
 	public class GraphConversionReducer implements Reducer<String, Integer, String>
 	{
 		@Override
-		public void reduce(String key, Iterable<Integer> values,
+		public void reduce(String key, List<Integer> values,
 				ValueEmitter<String> emitter) {
+
 			String ans = key + " #";
-			int counter = 0;
+			Collections.sort(values);
+			int curentValue = -1;
 			for (Integer value : values) {
-				int internalCounter = 0;
-				for (Integer value2 : values) {
-					if (internalCounter > counter){
-						if (value == value2){
-							ans += " " + value;
-						}
-					}
-					internalCounter++;
+				if (curentValue == value){
+					ans += " " + curentValue;	
+					curentValue = -1;	
+				}else{	
+					curentValue = value;
 				}
-				counter++;
 			}
 			emitter.emit(ans);
+
 		}
 
 	}
-
 }
