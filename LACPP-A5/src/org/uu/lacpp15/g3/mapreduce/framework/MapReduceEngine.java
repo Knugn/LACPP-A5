@@ -14,25 +14,25 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class MapReduceEngine {
-	Thread engineSupervisor;
+	
+	CompletionService<?> jobCompletionService; 
 	int nMappers, nReducers;
 	ExecutorService mapExecutor, reduceExecutor;
 	
-	
 	public MapReduceEngine(int nMappers, int nReducers) {
+		this.jobCompletionService = new ExecutorCompletionService<>(Executors.newSingleThreadExecutor());
 		this.nMappers = nMappers;
 		this.mapExecutor = Executors.newFixedThreadPool(nMappers);
 		this.nReducers = nReducers;
 		this.reduceExecutor = Executors.newFixedThreadPool(nReducers);
 	}
 	
-	public Future<Boolean> submitJob(MapReduceJob job) {
-		//TODO
-		return null;
+	public <K1,V1,K2,V2,V3> Future<?> submitJob(MapReduceJob<K1,V1,K2,V2,V3> job) {
+		return jobCompletionService.submit(new RunnableMapReduceJob<>(job), null);
 	}
 	
-	public void runJob(MapReduceJob job) {
-		//TODO
+	public <K1,V1,K2,V2,V3> void runJob(MapReduceJob<K1,V1,K2,V2,V3> job) {
+		new RunnableMapReduceJob<>(job).run();
 	}
 	
 	class RunnableMapReduceJob<K1,V1,K2,V2,V3> implements Runnable {
