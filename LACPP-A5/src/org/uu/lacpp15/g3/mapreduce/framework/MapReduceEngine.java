@@ -48,7 +48,6 @@ public class MapReduceEngine {
 
 		@Override
 		public void run() {
-			// TODO: this is just a sketch to help thinking
 			ConcurrentMap<K2,List<V2>> intermediaryMap = runMappers();
 			ConcurrentKeyValueIterable<K2,List<V2>> intermediaryIterable = new ConcurrentMapIterable<>(intermediaryMap);
 			runReducers(intermediaryIterable);
