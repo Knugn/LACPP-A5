@@ -12,12 +12,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.uu.lacpp15.g3.mapreduce.framework.KeyValueEmitter;
+import org.uu.lacpp15.g3.mapreduce.framework.KeyValueFormatter;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceEngine;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceIn;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceInUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceJob;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceOutUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
+import org.uu.lacpp15.g3.mapreduce.framework.PathGenerator;
 import org.uu.lacpp15.g3.mapreduce.framework.Reducer;
 import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
 
@@ -38,7 +40,7 @@ public class WordCount {
 		out.close();*/
 	}
 	
-	public static void run(String[] args, PrintStream out) throws FileNotFoundException, URISyntaxException {
+	public static void run(final String[] args, PrintStream out) throws FileNotFoundException, URISyntaxException {
 		String filePath = args[0];
 		int mapper = 1;
 		int reducers = 1;
@@ -52,6 +54,20 @@ public class WordCount {
 		System.out.println(path2.toString());
 		Map<String,List<Integer>> map = WordCount.run(MapReduceInUtil.fromFileLines(inputFIle),mapper,reducers);
 		//PrintWriter out = new PrintWriter(args[1]);
+		MapReduceOutUtil.toFiles(new PathGenerator() {
+			
+			@Override
+			public Path next() {
+			
+				return Paths.get(args[1],"/commonFriends");
+			}
+		}, new KeyValueFormatter<String, List<String>>() {
+
+			@Override
+			public String format(String key, List<String> value) {
+				return value.get(0);
+			}
+		},0,null);
 		out.print(map.toString());
 		out.close();
 	}
