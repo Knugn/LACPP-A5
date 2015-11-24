@@ -27,6 +27,7 @@ public class WordCount {
 	
 	public static void main(String[] args) throws FileNotFoundException, URISyntaxException {
 		run(args,System.out);
+		System.exit(0);
 		/*String filePath = args[0];
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);

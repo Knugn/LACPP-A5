@@ -28,6 +28,7 @@ public class Triangles {
 	
 	public static void main(String[] args) throws FileNotFoundException {
 		run(args,System.out);
+		System.exit(0);
 	}
 
 

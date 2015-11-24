@@ -27,6 +27,7 @@ public class CommonFriends {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		run(args,System.out);
+		System.exit(0);
 	}
 	
 	public static void run(String[] args,PrintStream out) throws FileNotFoundException {
