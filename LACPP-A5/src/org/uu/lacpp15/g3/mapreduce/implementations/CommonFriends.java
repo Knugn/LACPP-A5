@@ -1,9 +1,16 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.junit.Test;
 import org.uu.lacpp15.g3.mapreduce.framework.KeyValueEmitter;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceEngine;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceIn;
@@ -15,6 +22,21 @@ import org.uu.lacpp15.g3.mapreduce.framework.Reducer;
 import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
 
 public class CommonFriends {
+
+
+
+	public static void main(String[] args) throws FileNotFoundException {
+		String filePath = args[0];
+		List<URI> inputFIle = new ArrayList<URI>();
+		Path path2 = Paths.get(filePath);
+		inputFIle.add(path2.toUri());
+
+		Map<String, List<String>> map = CommonFriends.run(MapReduceInUtil.fromFileLines(inputFIle), 10);
+		PrintWriter out = new PrintWriter("commonFriends.txt");
+		out.print(map.toString());
+		out.close();
+	}
+
 
 	public static Map<String, List<String>> run(String text, int threads){
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
@@ -38,7 +60,7 @@ public class CommonFriends {
 		engine.runJob(job);
 		return outMap;
 	}
-	
+
 	public static Map<String, List<String>> run(MapReduceIn<String, String> inputMap, int threads){
 
 		Map<Integer,List<String>> mapNegbours = GraphConversion.run(inputMap,threads);
@@ -61,7 +83,7 @@ public class CommonFriends {
 		engine.runJob(job);
 		return outMap;
 	}
-	
+
 
 
 	public static class GraphConversionMapper implements Mapper<String, String, String, Integer>{
@@ -73,12 +95,12 @@ public class CommonFriends {
 			//input is A person han all his/her friends
 			value = value.replaceAll("# ", "");
 			String[] split = value.split(" ");
-		
+
 			int self = Integer.parseInt(split[0]);
 			for(int x = 1; x < split.length; x++){
 				for(int y = x+1; y < split.length; y++){
 					String outKey = "";
-					if (x < y){
+					if (split[x].compareTo(split[y]) < 0){
 						outKey = split[x] + " " +  split[y];
 					}
 					else{
@@ -87,7 +109,7 @@ public class CommonFriends {
 					emitter.emit(outKey, self);
 				}
 			}					
-			
+
 		}
 	}		
 

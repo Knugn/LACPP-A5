@@ -1,9 +1,16 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.junit.Test;
 import org.uu.lacpp15.g3.mapreduce.framework.KeyValueEmitter;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceEngine;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceIn;
@@ -16,29 +23,41 @@ import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
 
 public class GraphConversion {
 
+	public static void main(String[] args) throws FileNotFoundException {
+
+		String filePath = args[0];
+		List<URI> inputFIle = new ArrayList<URI>();
+		Path path2 = Paths.get(filePath);
+		inputFIle.add(path2.toUri());
+
+		Map<Integer, List<String>> map = GraphConversion.run(MapReduceInUtil.fromFileLines(inputFIle), 10);
+		PrintWriter out = new PrintWriter("Conversion.txt");
+		out.print(map.toString());
+		out.close();
+	}
 
 
 	public static Map<Integer, List<String>> run(String text,int threds){
-		
+
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
-		
+
 		String[] inputText = text.split("\\n+");
 		int keyNr = 0;
 		for (String string : inputText) {
 			map.put("" + keyNr++, string);
 		}
-				
-		
+
+
 		return run(MapReduceInUtil.fromConcurrentMap(map), threds);
 	}
 
 
-public static Map<Integer, List<String>> run(MapReduceIn<String, String> map,int threds){
-		
+	public static Map<Integer, List<String>> run(MapReduceIn<String, String> map,int threds){
+
 
 		ConcurrentHashMap<Integer, List<String>> outMap = new ConcurrentHashMap<>();
-		
-		
+
+
 		MapReduceJob<String, String, Integer, Integer, String> job = new MapReduceJob<>(
 				map, 
 				new GraphConversionMapper(),
@@ -49,7 +68,7 @@ public static Map<Integer, List<String>> run(MapReduceIn<String, String> map,int
 		return outMap;
 	}
 
-	
+
 	public static class GraphConversionMapper implements Mapper<String, String, Integer, Integer>{
 
 		@Override

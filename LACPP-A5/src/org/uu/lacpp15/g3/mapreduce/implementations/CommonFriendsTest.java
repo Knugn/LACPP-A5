@@ -1,39 +1,51 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.junit.Test;
-import org.uu.lacpp15.g3.mapreduce.framework.MapReduceInUtil;
 
 public class CommonFriendsTest {
 
 	@Test
 	public void test() {
-		String test = "(1,3)\n(2,3)\n(2,5)\n(3,5)";
-		//String test = GraphGen.out(1000,10);r
+		String test = "(1,3)\n(2,5)\n(3,5)\n(3,4)\n(2,4)";
+		
 		//Map<String,List<String>> map = CommonFriends.run(test,10);
 		//System.out.print(map);
+		Map<String,List<String>> map = CommonFriends.run(test,10);
 		
+		TreeMap<String, List<String>> tree = new TreeMap<>(map);
+		System.out.println(tree);
+		int[][] expectedValues = {{1,4,3},{1,5,3},{2,3,4,5},{4,5,2,3}};
+		int counter = 0;
+
+		for(List<String> value: tree.values()){
+			assert(value.size() == 1);
+			String str = value.get(0).replaceAll("# ", "");
+			//System.out.println(str);
+			
+			String[] split = str.split(" ");
+			String temp1 = split[0];
+			String temp2 = split[1];
+			split[0] = "-2";
+			split[1] = "-1";
+			Arrays.sort(split);
+			split[0] = temp1;
+			split[1] = temp2;
+			for (int i = 0; i < split.length; i++){
+				//System.out.println(split[i] + " " + expectedValues[counter][i]);
+				assert(Integer.parseInt(split[i]) == expectedValues[counter][i]);
+			}
+			counter++;
 		
+		}
 		
 	}
 	
 
-	@Test
-	public void testFile() {
-		List<URI> inputFIle = new ArrayList<URI>();
-		Path path2 = Paths.get("src/org/uu/lacpp15/g3/mapreduce/resoucre/graph1.txt");
-		//System.out.println(path2.toAbsolutePath().toString());
-		inputFIle.add(path2.toUri());
-		
-		Map<String, List<String>> map = CommonFriends.run(MapReduceInUtil.fromFileLines(inputFIle), 10);
-	//	System.out.println(map.toString());
-	}
 	
 
 }
