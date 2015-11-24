@@ -50,7 +50,7 @@ public class CommonFriends {
 			@Override
 			public Path next() {
 			
-				return Paths.get(args[1] + "/commonFriends");
+				return Paths.get(args[1],"/commonFriends");
 			}
 		}, new KeyValueFormatter<String, List<String>>() {
 
