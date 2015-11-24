@@ -2,7 +2,6 @@ package org.uu.lacpp15.g3.mapreduce.implementations;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -103,10 +102,10 @@ public class CommonFriends {
 		public void map(String key, String value,
 				KeyValueEmitter<String, Integer> emitter) {
 
-			//input is A person han all his/her friends
+			//input is a vertex and its negbours
 			value = value.replaceAll("# ", "");
 			String[] split = value.split(" ");
-
+			//To every negbour pair send vertex
 			int self = Integer.parseInt(split[0]);
 			for(int x = 1; x < split.length; x++){
 				for(int y = x+1; y < split.length; y++){

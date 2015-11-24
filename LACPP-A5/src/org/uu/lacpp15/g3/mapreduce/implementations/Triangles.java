@@ -2,7 +2,6 @@ package org.uu.lacpp15.g3.mapreduce.implementations;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
