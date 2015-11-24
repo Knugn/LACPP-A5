@@ -42,6 +42,7 @@ public class ConcurrentLineFilesIterable implements ConcurrentKeyValueIterable<S
 		private Charset				cs					= Charset.defaultCharset();
 		private int					linesPerChunk		= 16;
 		private Iterator<URI>		fileIterator 		= null;
+		private Path				curFilePath			= null;
 		private List<String>		curFileContent		= null;
 		private Iterator<String>	curFileContentIter	= null;
 		private int					curFileCursor		= -1;
@@ -66,9 +67,9 @@ public class ConcurrentLineFilesIterable implements ConcurrentKeyValueIterable<S
 							done = true;
 							return false;
 						}
-						Path path = Paths.get(fileIterator.next());
+						curFilePath = Paths.get(fileIterator.next());
 						try {
-							curFileContent = Files.readAllLines(path, cs);
+							curFileContent = Files.readAllLines(curFilePath, cs);
 						}
 						catch (IOException e) {
 							e.printStackTrace();
@@ -81,9 +82,10 @@ public class ConcurrentLineFilesIterable implements ConcurrentKeyValueIterable<S
 						else {
 							curFileCursor = 0;
 							curFileContentIter = curFileContent.iterator();
-							keyFormat = "<File="+path.toString() +",Line=%d>";
+							
 						}
 					}
+					keyFormat = "<File="+curFilePath.toString() +",Line=%d>";
 					chunkLines.clear();
 					nextChunkLineNumber = curFileCursor;
 					for (int i=0; i<linesPerChunk; i++) {
