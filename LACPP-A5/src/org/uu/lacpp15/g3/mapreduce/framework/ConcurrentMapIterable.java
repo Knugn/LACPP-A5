@@ -22,7 +22,7 @@ public class ConcurrentMapIterable<K,V> implements ConcurrentKeyValueIterable<K,
 		Iterator<Entry<K,V>> entries = map.entrySet().iterator();
 		ArrayList<KeyValueIterator<K,V>> iterators = new ArrayList<>(numIterators);
 		for (int i=0; i<numIterators; i++)
-			iterators.add(new MapEntryIterator<>(entries));
+			iterators.add(new ConcurrentMapEntryIterator<>(entries));
 		return iterators;
 	}
 	
