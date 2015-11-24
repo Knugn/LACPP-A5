@@ -27,7 +27,7 @@ public class WordCountTest {
  		Map<String, List<Integer>> map = WordCount.run(text,10,10);
  	//	System.out.print(map.toString());
  		TreeMap<String,List<Integer>> tree = new TreeMap<>(map);
- 		System.out.print(tree);
+ 		//System.out.print(tree);
  		int[] expectedValues = {4,1,2,1};
  		int counter = 0;
  		for(List<Integer> value: tree.values()){

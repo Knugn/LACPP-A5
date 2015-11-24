@@ -7,6 +7,8 @@ public class AllTest {
 		GraphConversionTest.test();
 		TrianglesTest.test();
 		WordCountTest.test();
+		System.out.println("no error");
+		System.exit(0);
 	}
 
 }

@@ -16,7 +16,7 @@ public class CommonFriendsTest {
 		Map<String,List<String>> map = CommonFriends.run(test,10,10);
 		
 		TreeMap<String, List<String>> tree = new TreeMap<>(map);
-		System.out.println(tree);
+	//	System.out.println(tree);
 		int[][] expectedValues = {{1,4,3},{1,5,3},{2,3,4,5},{4,5,2,3}};
 		int counter = 0;
 

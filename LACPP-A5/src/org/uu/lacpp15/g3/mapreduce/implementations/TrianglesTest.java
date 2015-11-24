@@ -16,7 +16,7 @@ public class TrianglesTest {
 		//System.out.print(map);
 		
 		TreeMap<Integer, List<Integer>> tree = new TreeMap<>(map);
-		System.out.println(tree);
+	//	System.out.println(tree);
 		int[] expectedValues = {0,2,2,1,1};
 		int[] expectedKey = {1,2,3,4,5};
 		int counter = 0;
