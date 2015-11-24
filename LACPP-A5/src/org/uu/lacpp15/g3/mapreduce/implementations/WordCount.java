@@ -1,6 +1,7 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,13 +26,26 @@ public class WordCount {
 
 	
 	public static void main(String[] args) throws FileNotFoundException, URISyntaxException {
+		run(args,System.out);
+		/*String filePath = args[0];
+		List<URI> inputFIle = new ArrayList<URI>();
+		Path path2 = Paths.get(filePath);
+		inputFIle.add(path2.toUri());
+		System.out.println(path2.toString());
+		Map<String,List<Integer>> map = WordCount.run(MapReduceInUtil.fromFileLines(inputFIle),10);
+		PrintWriter out = new PrintWriter(args[1]);
+		out.print(map.toString());
+		out.close();*/
+	}
+	
+	public static void run(String[] args, PrintStream out) throws FileNotFoundException, URISyntaxException {
 		String filePath = args[0];
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);
 		inputFIle.add(path2.toUri());
 		System.out.println(path2.toString());
 		Map<String,List<Integer>> map = WordCount.run(MapReduceInUtil.fromFileLines(inputFIle),10);
-		PrintWriter out = new PrintWriter("wordCount.txt");
+		//PrintWriter out = new PrintWriter(args[1]);
 		out.print(map.toString());
 		out.close();
 	}

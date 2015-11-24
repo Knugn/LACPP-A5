@@ -1,6 +1,7 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Path;
@@ -25,13 +26,17 @@ public class CommonFriends {
 
 
 	public static void main(String[] args) throws FileNotFoundException {
+		run(args,System.out);
+	}
+	
+	public static void run(String[] args,PrintStream out) throws FileNotFoundException {
 		String filePath = args[0];
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);
 		inputFIle.add(path2.toUri());
 
 		Map<String, List<String>> map = CommonFriends.run(MapReduceInUtil.fromFileLines(inputFIle), 10);
-		PrintWriter out = new PrintWriter("commonFriends.txt");
+		//PrintWriter out = new PrintWriter("commonFriends.txt");
 		out.print(map.toString());
 		out.close();
 	}

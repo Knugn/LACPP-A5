@@ -1,6 +1,7 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Path;
@@ -23,18 +24,24 @@ import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
 
 public class Triangles {
 
+	
+	
 	public static void main(String[] args) throws FileNotFoundException {
+		run(args,System.out);
+	}
+
+
+	public static void run(String[] args, PrintStream out) throws FileNotFoundException {
 		String filePath = args[0];
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);
 		inputFIle.add(path2.toUri());
 		Map<Integer,List<Integer>> map = Triangles.run(MapReduceInUtil.fromFileLines(inputFIle),2);
-		PrintWriter out = new PrintWriter("Triangles.txt");
+		//PrintWriter out = new PrintWriter("Triangles.txt");
 		out.print(map.toString());
 		out.close();
 	}
-
-
+	
 	public static Map<Integer, List<Integer>> run(MapReduceIn<String, String> inputMap, int threds){
 
 

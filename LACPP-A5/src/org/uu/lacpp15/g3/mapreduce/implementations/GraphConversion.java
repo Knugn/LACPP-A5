@@ -1,6 +1,7 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Path;
@@ -23,6 +24,10 @@ import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
 public class GraphConversion {
 
 	public static void main(String[] args) throws FileNotFoundException {
+		run(args, System.out);
+	}
+	
+	public static void run(String[] args,PrintStream out) throws FileNotFoundException {
 
 		String filePath = args[0];
 		List<URI> inputFIle = new ArrayList<URI>();
@@ -30,11 +35,11 @@ public class GraphConversion {
 		inputFIle.add(path2.toUri());
 
 		Map<Integer, List<String>> map = GraphConversion.run(MapReduceInUtil.fromFileLines(inputFIle), 10);
-		PrintWriter out = new PrintWriter("Conversion.txt");
+		//PrintWriter out = new PrintWriter("Conversion.txt");
+		
 		out.print(map.toString());
 		out.close();
 	}
-
 
 	public static Map<Integer, List<String>> run(String text,int threds){
 
