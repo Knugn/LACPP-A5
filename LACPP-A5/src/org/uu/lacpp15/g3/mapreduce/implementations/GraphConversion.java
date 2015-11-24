@@ -1,28 +1,55 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.uu.lacpp15.g3.mapreduce.framework.KeyValueEmitter;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceEngine;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceInUtil;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceJob;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceOutUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
 import org.uu.lacpp15.g3.mapreduce.framework.Reducer;
 import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
+import org.uu.lacpp15.g3.mapreduce.implementations.CommonFriends.GraphConversionMapper;
+import org.uu.lacpp15.g3.mapreduce.implementations.CommonFriends.GraphConversionReducer;
 
 public class GraphConversion {
 
 
-	public static void main(String[] args) {
 
+	public static Map<Integer, List<String>> run(String text){
+		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
+		String[] inputText = text.split("\\n+");
+		int keyNr = 0;
+		for (String string : inputText) {
+			map.put("" + keyNr++, string);
+		}
+		
+
+		ConcurrentHashMap<Integer, List<String>> outMap = new ConcurrentHashMap<>();
+		
+		
+		MapReduceJob<String, String, Integer, Integer, String> job = new MapReduceJob<>(
+				MapReduceInUtil.fromConcurrentMap(map), 
+				new GraphConversionMapper(),
+				new GraphConversionReducer(),
+				MapReduceOutUtil.toConcurrentMap(outMap));
+		MapReduceEngine engine = new MapReduceEngine(4, 4);
+		engine.runJob(job);
+		return outMap;
 	}
 
 
-	public class GraphConversionMapper implements Mapper<String, String, Integer, Integer>{
+	public static class GraphConversionMapper implements Mapper<String, String, Integer, Integer>{
 
 		@Override
 		public void map(String key, String value,
 				KeyValueEmitter<Integer, Integer> emitter) {
 
-			value.replaceAll("[^0-9]+", " ");
-			String[] values = value.split(" ");
+			value = value.replaceAll("[(|)]", "");
+			String[] values = value.split(",");
 			int value1 = Integer.parseInt(values[0]);
 			int value2 = Integer.parseInt(values[1]);
 
@@ -34,7 +61,7 @@ public class GraphConversion {
 	}
 
 
-	public class GraphConversionReducer implements Reducer<Integer, Integer, String>
+	public static class GraphConversionReducer implements Reducer<Integer, Integer, String>
 	{
 		@Override
 		public void reduce(Integer key, List<Integer> values,

@@ -2,25 +2,46 @@ package org.uu.lacpp15.g3.mapreduce.implementations;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.uu.lacpp15.g3.mapreduce.framework.KeyValueEmitter;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceEngine;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceInUtil;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceJob;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceOutUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
 import org.uu.lacpp15.g3.mapreduce.framework.Reducer;
 import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
+import org.uu.lacpp15.g3.mapreduce.implementations.CommonFriends.GraphConversionMapper;
+import org.uu.lacpp15.g3.mapreduce.implementations.CommonFriends.GraphConversionReducer;
 
 public class Triangles {
 
 
-	public static void main(String[] args) {
+	public static Map<Integer, List<Integer>> run(String text){
+		Map<Integer,List<String>> mapNegbours = GraphConversion.run(text);
+		
+		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
+		
+		for (Map.Entry<Integer,List<String>> entry : mapNegbours.entrySet()) {
+			map.put(entry.getKey().toString(), entry.getValue().get(0));
+		}
 
+		ConcurrentHashMap<Integer, List<Integer>> outMap = new ConcurrentHashMap<>();
+		
+		
+		MapReduceJob<String, String, Integer, int[], Integer> job = new MapReduceJob<>(
+				MapReduceInUtil.fromConcurrentMap(map), 
+				new GraphTrianglesMapper(),
+				new GraphTrianglesReducer(),
+				MapReduceOutUtil.toConcurrentMap(outMap));
+		MapReduceEngine engine = new MapReduceEngine(4, 4);
+		engine.runJob(job);
+		return outMap;
 	}
 
-	public class GraphTrianglesMapper implements Mapper<String, String, Integer, int[]>{
-		int n;
-
-		GraphTrianglesMapper(int n){
-			this.n = n;
-		}
+	public static class GraphTrianglesMapper implements Mapper<String, String, Integer, int[]>{
 
 		@Override
 		public void map(String key, String value,
@@ -42,7 +63,7 @@ public class Triangles {
 
 	}
 
-	public class GraphTrianglesReducer implements Reducer<Integer, int[], Integer>
+	public static class GraphTrianglesReducer implements Reducer<Integer, int[], Integer>
 	{
 		@Override
 		public void reduce(Integer key, List<int[]> values,
