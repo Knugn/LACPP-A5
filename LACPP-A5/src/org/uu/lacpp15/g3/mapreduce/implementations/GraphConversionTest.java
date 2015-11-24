@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.junit.Test;
-
 public class GraphConversionTest {
 
 	
 
 	
-	@Test
+	//@Test
 	public static void test() {
 		//1 # 2 3
 		//2 # 1
