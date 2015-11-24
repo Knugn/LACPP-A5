@@ -10,21 +10,23 @@ import java.util.List;
 
 public class ConcurrentKeyValueFilesEmitable<K,V> implements ConcurrentKeyValueEmitable<K,V> {
 	
-	Charset cs;
-	int keyValuePairsPerFile;
 	PathGenerator filePathGenerator;
-	String keyPairFormat;
+	KeyValueFormatter<? super K,? super V> formatter;
+	int keyValuePairsPerFile;
+	Charset cs;
+	
+	
 	
 	public ConcurrentKeyValueFilesEmitable(
 			PathGenerator filePathGenerator, 
-			String keyPairFormat, 
+			KeyValueFormatter<? super K,? super V> formatter, 
 			int keyValuePairsPerFile,
 			Charset cs) {
 		super();
-		setCharset(cs);
-		setKeyValuePairsPerFile(keyValuePairsPerFile);
 		setFilePathGenerator(filePathGenerator);
-		setKeyPairFormat(keyPairFormat);
+		setFormatter(formatter);
+		setKeyValuePairsPerFile(keyValuePairsPerFile);
+		setCharset(cs);
 	}
 
 	public Charset getCharset() {
@@ -59,14 +61,14 @@ public class ConcurrentKeyValueFilesEmitable<K,V> implements ConcurrentKeyValueE
 		this.filePathGenerator = filePathGenerator;
 	}
 
-	public String getKeyPairFormat() {
-		return keyPairFormat;
+	public KeyValueFormatter<? super K, ? super V> getFormatter() {
+		return formatter;
 	}
 
-	public void setKeyPairFormat(String keyPairFormat) {
-		if(keyPairFormat == null)
-			throw new IllegalArgumentException("keyPairFormat must not be null.");
-		this.keyPairFormat = keyPairFormat;
+	public void setFormatter(KeyValueFormatter<? super K, ? super V> formatter) {
+		if(formatter == null)
+			throw new IllegalArgumentException("formatter must not be null.");
+		this.formatter = formatter;
 	}
 
 	@Override
@@ -87,7 +89,7 @@ public class ConcurrentKeyValueFilesEmitable<K,V> implements ConcurrentKeyValueE
 
 			@Override
 			public void emit(K key, V value) {
-				String line = String.format(keyPairFormat, key, value);
+				String line = formatter.format(key, value);
 				try {
 					synchronized(EmitterSession.this) {
 						if (curWriter == null) {

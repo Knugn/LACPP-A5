@@ -18,14 +18,14 @@ public class MapReduceOutUtil {
 	
 	public static <K,V> MapReduceOut<K,V> toFiles(
 			final PathGenerator filePathGenerator, 
-			final String keyPairFormat, 
+			final KeyValueFormatter<? super K, ? super List<V>> formatter, 
 			final int keyValuePairsPerFile,
 			final Charset cs) {
 		return new MapReduceOut<K, V>() {
 			@Override
 			public Collection<KeyValueEmitter<K, List<V>>> emitters(int numEmitters) {
 				return new ConcurrentKeyValueFilesEmitable<K,List<V>>(
-						filePathGenerator,keyPairFormat,keyValuePairsPerFile,cs
+						filePathGenerator,formatter,keyValuePairsPerFile,cs
 						).emitters(numEmitters);
 			}
 		};
