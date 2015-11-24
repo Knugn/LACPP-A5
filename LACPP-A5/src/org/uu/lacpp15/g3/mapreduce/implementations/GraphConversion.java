@@ -31,18 +31,24 @@ public class GraphConversion {
 	public static void run(String[] args,PrintStream out) throws FileNotFoundException {
 
 		String filePath = args[0];
+		int mapper = 1;
+		int reducers = 1;
+		if (args.length > 3){
+			mapper = Integer.parseInt(args[3]);
+			reducers = Integer.parseInt(args[4]);
+		}
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);
 		inputFIle.add(path2.toUri());
 
-		Map<Integer, List<String>> map = GraphConversion.run(MapReduceInUtil.fromFileLines(inputFIle), 10);
+		Map<Integer, List<String>> map = GraphConversion.run(MapReduceInUtil.fromFileLines(inputFIle), mapper,reducers);
 		//PrintWriter out = new PrintWriter("Conversion.txt");
 		
 		out.print(map.toString());
 		out.close();
 	}
 
-	public static Map<Integer, List<String>> run(String text,int threds){
+	public static Map<Integer, List<String>> run(String text,int mapper,int reducers){
 
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
 
@@ -53,11 +59,11 @@ public class GraphConversion {
 		}
 
 
-		return run(MapReduceInUtil.fromConcurrentMap(map), threds);
+		return run(MapReduceInUtil.fromConcurrentMap(map), mapper,reducers);
 	}
 
 
-	public static Map<Integer, List<String>> run(MapReduceIn<String, String> map,int threds){
+	public static Map<Integer, List<String>> run(MapReduceIn<String, String> map,int mapper,int reducers){
 
 
 		ConcurrentHashMap<Integer, List<String>> outMap = new ConcurrentHashMap<>();
@@ -68,7 +74,7 @@ public class GraphConversion {
 				new GraphConversionMapper(),
 				new GraphConversionReducer(),
 				MapReduceOutUtil.toConcurrentMap(outMap));
-		MapReduceEngine engine = new MapReduceEngine(threds, threds);
+		MapReduceEngine engine = new MapReduceEngine(mapper, reducers);
 		engine.runJob(job);
 		return outMap;
 	}

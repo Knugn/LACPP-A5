@@ -32,21 +32,27 @@ public class CommonFriends {
 	
 	public static void run(String[] args,PrintStream out) throws FileNotFoundException {
 		String filePath = args[0];
+		int mapper = 1;
+		int reducers = 1;
+		if (args.length > 3){
+			mapper = Integer.parseInt(args[3]);
+			reducers = Integer.parseInt(args[4]);
+		}
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);
 		inputFIle.add(path2.toUri());
 
-		Map<String, List<String>> map = CommonFriends.run(MapReduceInUtil.fromFileLines(inputFIle), 10);
+		Map<String, List<String>> map = CommonFriends.run(MapReduceInUtil.fromFileLines(inputFIle), mapper,reducers);
 		//PrintWriter out = new PrintWriter("commonFriends.txt");
 		out.print(map.toString());
 		out.close();
 	}
 
 
-	public static Map<String, List<String>> run(String text, int threads){
+	public static Map<String, List<String>> run(String text, int mapper,int reducers){
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
 
-		Map<Integer,List<String>> mapNegbours = GraphConversion.run(text,threads);
+		Map<Integer,List<String>> mapNegbours = GraphConversion.run(text,mapper,reducers);
 		//System.out.println(mapNegbours);
 		for (Map.Entry<Integer,List<String>> entry : mapNegbours.entrySet()) {
 			map.put(entry.getKey().toString(), entry.getValue().get(0));
@@ -61,14 +67,14 @@ public class CommonFriends {
 				new GraphConversionMapper(),
 				new GraphConversionReducer(),
 				MapReduceOutUtil.toConcurrentMap(outMap));
-		MapReduceEngine engine = new MapReduceEngine(threads, threads);
+		MapReduceEngine engine = new MapReduceEngine(mapper, reducers);
 		engine.runJob(job);
 		return outMap;
 	}
 
-	public static Map<String, List<String>> run(MapReduceIn<String, String> inputMap, int threads){
+	public static Map<String, List<String>> run(MapReduceIn<String, String> inputMap, int mapper, int reducer){
 
-		Map<Integer,List<String>> mapNegbours = GraphConversion.run(inputMap,threads);
+		Map<Integer,List<String>> mapNegbours = GraphConversion.run(inputMap,mapper,reducer);
 		//System.out.println(mapNegbours);
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
 		for (Map.Entry<Integer,List<String>> entry : mapNegbours.entrySet()) {
@@ -84,7 +90,7 @@ public class CommonFriends {
 				new GraphConversionMapper(),
 				new GraphConversionReducer(),
 				MapReduceOutUtil.toConcurrentMap(outMap));
-		MapReduceEngine engine = new MapReduceEngine(threads, threads);
+		MapReduceEngine engine = new MapReduceEngine(mapper, reducer);
 		engine.runJob(job);
 		return outMap;
 	}

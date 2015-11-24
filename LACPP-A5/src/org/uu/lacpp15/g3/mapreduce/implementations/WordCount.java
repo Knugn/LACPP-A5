@@ -41,25 +41,31 @@ public class WordCount {
 	
 	public static void run(String[] args, PrintStream out) throws FileNotFoundException, URISyntaxException {
 		String filePath = args[0];
+		int mapper = 1;
+		int reducers = 1;
+		if (args.length > 3){
+			mapper = Integer.parseInt(args[3]);
+			reducers = Integer.parseInt(args[4]);
+		}
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);
 		inputFIle.add(path2.toUri());
 		System.out.println(path2.toString());
-		Map<String,List<Integer>> map = WordCount.run(MapReduceInUtil.fromFileLines(inputFIle),10);
+		Map<String,List<Integer>> map = WordCount.run(MapReduceInUtil.fromFileLines(inputFIle),mapper,reducers);
 		//PrintWriter out = new PrintWriter(args[1]);
 		out.print(map.toString());
 		out.close();
 	}
 	
-	public static Map<String, List<Integer>> run(String text,int threads){
+	public static Map<String, List<Integer>> run(String text,int mappers, int reducers){
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
 		map.put("file1", text);
-		return run(MapReduceInUtil.fromConcurrentMap(map),threads);
+		return run(MapReduceInUtil.fromConcurrentMap(map),mappers,reducers);
 		
 	}
 	
 
-	public static Map<String, List<Integer>> run(MapReduceIn<String, String> map,int threads){
+	public static Map<String, List<Integer>> run(MapReduceIn<String, String> map,int mappers, int reducers){
 
 		ConcurrentHashMap<String, List<Integer>> outMap = new ConcurrentHashMap<String, List<Integer>>();
 		
@@ -69,7 +75,7 @@ public class WordCount {
 				new WordCountMapper(),
 				new WordCountReducer(),
 				MapReduceOutUtil.toConcurrentMap(outMap));
-		MapReduceEngine engine = new MapReduceEngine(threads, threads);
+		MapReduceEngine engine = new MapReduceEngine(mappers, reducers);
 		engine.runJob(job);
 		return outMap;
 	}

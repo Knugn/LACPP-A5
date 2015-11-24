@@ -6,20 +6,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.junit.Test;
+
 public class GraphConversionTest {
 
 	
 
 	
-//	@Test
-	public void test() {
+	@Test
+	public static void test() {
 		//1 # 2 3
 		//2 # 1
 		//3 # 1
 		//4 # 5
 		//5 # 4
 		String test = "(1,3)\n(2,3)\n(2,5)\n(3,5)";
-		Map<Integer,List<String>> map = GraphConversion.run(test,10);
+		Map<Integer,List<String>> map = GraphConversion.run(test,10,10);
 		System.out.println(map);
 		TreeMap<Integer, List<String>> tree = new TreeMap<>(map);
 		int[][] expectedValues = {{1,3},{2,3,5},{3,1,2,5},{5,2,3}};

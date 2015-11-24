@@ -9,10 +9,10 @@ public class TrianglesTest {
 	
 	
 //	@Test
-	public void test() {
+	public static void test() {
 		String test = "(1,3)\n(2,3)\n(2,5)\n(3,5)\n(3,4)\n(2,4)";
 		//String test = GraphGen.out(1000,10);r
-		Map<Integer,List<Integer>> map = Triangles.run(test,2);
+		Map<Integer,List<Integer>> map = Triangles.run(test,10,10);
 		//System.out.print(map);
 		
 		TreeMap<Integer, List<Integer>> tree = new TreeMap<>(map);

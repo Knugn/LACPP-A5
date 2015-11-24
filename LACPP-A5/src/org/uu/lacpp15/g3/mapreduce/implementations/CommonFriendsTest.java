@@ -8,12 +8,12 @@ import java.util.TreeMap;
 public class CommonFriendsTest {
 
 //	@Test
-	public void test() {
+	public static void test() {
 		String test = "(1,3)\n(2,5)\n(3,5)\n(3,4)\n(2,4)";
 		
 		//Map<String,List<String>> map = CommonFriends.run(test,10);
 		//System.out.print(map);
-		Map<String,List<String>> map = CommonFriends.run(test,10);
+		Map<String,List<String>> map = CommonFriends.run(test,10,10);
 		
 		TreeMap<String, List<String>> tree = new TreeMap<>(map);
 		System.out.println(tree);

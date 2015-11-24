@@ -34,20 +34,26 @@ public class Triangles {
 
 	public static void run(String[] args, PrintStream out) throws FileNotFoundException {
 		String filePath = args[0];
+		int mapper = 1;
+		int reducers = 1;
+		if (args.length > 3){
+			mapper = Integer.parseInt(args[3]);
+			reducers = Integer.parseInt(args[4]);
+		}
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);
 		inputFIle.add(path2.toUri());
-		Map<Integer,List<Integer>> map = Triangles.run(MapReduceInUtil.fromFileLines(inputFIle),2);
+		Map<Integer,List<Integer>> map = Triangles.run(MapReduceInUtil.fromFileLines(inputFIle),mapper,reducers);
 		//PrintWriter out = new PrintWriter("Triangles.txt");
 		out.print(map.toString());
 		out.close();
 	}
 	
-	public static Map<Integer, List<Integer>> run(MapReduceIn<String, String> inputMap, int threds){
+	public static Map<Integer, List<Integer>> run(MapReduceIn<String, String> inputMap, int mapper,int reducers){
 
 
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();	
-		Map<Integer,List<String>> mapNegbours = GraphConversion.run(inputMap,threds);
+		Map<Integer,List<String>> mapNegbours = GraphConversion.run(inputMap,mapper,reducers);
 
 		System.out.println(mapNegbours);
 		for (Map.Entry<Integer,List<String>> entry : mapNegbours.entrySet()) {
@@ -62,16 +68,16 @@ public class Triangles {
 				new GraphTrianglesMapper(),
 				new GraphTrianglesReducer(),
 				MapReduceOutUtil.toConcurrentMap(outMap));
-		MapReduceEngine engine = new MapReduceEngine(threds,threds);
+		MapReduceEngine engine = new MapReduceEngine(mapper,reducers);
 		engine.runJob(job);
 		return outMap;
 	}
 
-	public static Map<Integer, List<Integer>> run(String text, int threds){
+	public static Map<Integer, List<Integer>> run(String text, int mapper,int reducers){
 
 
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
-		Map<Integer,List<String>> mapNegbours = GraphConversion.run(text,threds);
+		Map<Integer,List<String>> mapNegbours = GraphConversion.run(text,mapper,reducers);
 		for (Map.Entry<Integer,List<String>> entry : mapNegbours.entrySet()) {
 			map.put(entry.getKey().toString(), entry.getValue().get(0));
 		}
@@ -84,7 +90,7 @@ public class Triangles {
 				new GraphTrianglesMapper(),
 				new GraphTrianglesReducer(),
 				MapReduceOutUtil.toConcurrentMap(outMap));
-		MapReduceEngine engine = new MapReduceEngine(threds,threds);
+		MapReduceEngine engine = new MapReduceEngine(mapper,reducers);
 		engine.runJob(job);
 		return outMap;
 	}
