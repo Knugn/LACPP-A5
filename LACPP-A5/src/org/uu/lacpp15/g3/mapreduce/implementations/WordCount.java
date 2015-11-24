@@ -29,7 +29,7 @@ public class WordCount {
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);
 		inputFIle.add(path2.toUri());
-		
+		System.out.println(path2.toString());
 		Map<String,List<Integer>> map = WordCount.run(MapReduceInUtil.fromFileLines(inputFIle),10);
 		PrintWriter out = new PrintWriter("wordCount.txt");
 		out.print(map.toString());
