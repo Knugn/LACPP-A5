@@ -13,17 +13,16 @@ import org.uu.lacpp15.g3.mapreduce.framework.MapReduceOutUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
 import org.uu.lacpp15.g3.mapreduce.framework.Reducer;
 import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
-import org.uu.lacpp15.g3.mapreduce.implementations.CommonFriends.GraphConversionMapper;
-import org.uu.lacpp15.g3.mapreduce.implementations.CommonFriends.GraphConversionReducer;
 
 public class Triangles {
 
 
-	public static Map<Integer, List<Integer>> run(String text){
-		Map<Integer,List<String>> mapNegbours = GraphConversion.run(text);
+	public static Map<Integer, List<Integer>> run(String text, int threds){
+		
 		
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
-		
+		Map<Integer,List<String>> mapNegbours = GraphConversion.run(text,threds);
+		System.out.println(mapNegbours);
 		for (Map.Entry<Integer,List<String>> entry : mapNegbours.entrySet()) {
 			map.put(entry.getKey().toString(), entry.getValue().get(0));
 		}
@@ -36,7 +35,7 @@ public class Triangles {
 				new GraphTrianglesMapper(),
 				new GraphTrianglesReducer(),
 				MapReduceOutUtil.toConcurrentMap(outMap));
-		MapReduceEngine engine = new MapReduceEngine(4, 4);
+		MapReduceEngine engine = new MapReduceEngine(threds,threds);
 		engine.runJob(job);
 		return outMap;
 	}
@@ -47,7 +46,7 @@ public class Triangles {
 		public void map(String key, String value,
 				KeyValueEmitter<Integer, int[]> emitter) {
 			//input is A person and B all his/her friends
-			value.replaceAll("[^0-9]+", " ");
+			value = value.replaceAll("# ", "");
 			String[] split = value.split(" ");
 			int[] values = new int[split.length];
 			values[0] = -1;
@@ -82,7 +81,8 @@ public class Triangles {
 					continue;
 				}
 				int counter = 1;
-				int counter2 = 1; 
+				int counter2 = 1;
+				//Compare all negbours with all negbours of negbours
 				while(counter2 < friends.length && counter < selfFriends.length){
 					if (selfFriends[counter] == friends[counter2]){
 						ans++;
@@ -95,7 +95,7 @@ public class Triangles {
 					}
 				}
 			}
-			emitter.emit(ans);
+			emitter.emit(ans/2);
 		}
 
 	}

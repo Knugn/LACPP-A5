@@ -6,42 +6,50 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.uu.lacpp15.g3.mapreduce.framework.KeyValueEmitter;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceEngine;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceIn;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceInUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceJob;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceOutUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
 import org.uu.lacpp15.g3.mapreduce.framework.Reducer;
 import org.uu.lacpp15.g3.mapreduce.framework.ValueEmitter;
-import org.uu.lacpp15.g3.mapreduce.implementations.CommonFriends.GraphConversionMapper;
-import org.uu.lacpp15.g3.mapreduce.implementations.CommonFriends.GraphConversionReducer;
 
 public class GraphConversion {
 
 
 
-	public static Map<Integer, List<String>> run(String text){
+	public static Map<Integer, List<String>> run(String text,int threds){
+		
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
+		
 		String[] inputText = text.split("\\n+");
 		int keyNr = 0;
 		for (String string : inputText) {
 			map.put("" + keyNr++, string);
 		}
+				
+		
+		return run(MapReduceInUtil.fromConcurrentMap(map), threds);
+	}
+
+
+public static Map<Integer, List<String>> run(MapReduceIn<String, String> map,int threds){
 		
 
 		ConcurrentHashMap<Integer, List<String>> outMap = new ConcurrentHashMap<>();
 		
 		
 		MapReduceJob<String, String, Integer, Integer, String> job = new MapReduceJob<>(
-				MapReduceInUtil.fromConcurrentMap(map), 
+				map, 
 				new GraphConversionMapper(),
 				new GraphConversionReducer(),
 				MapReduceOutUtil.toConcurrentMap(outMap));
-		MapReduceEngine engine = new MapReduceEngine(4, 4);
+		MapReduceEngine engine = new MapReduceEngine(threds, threds);
 		engine.runJob(job);
 		return outMap;
 	}
 
-
+	
 	public static class GraphConversionMapper implements Mapper<String, String, Integer, Integer>{
 
 		@Override
