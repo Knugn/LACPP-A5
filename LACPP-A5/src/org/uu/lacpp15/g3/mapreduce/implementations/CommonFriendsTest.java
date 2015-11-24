@@ -5,11 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.junit.Test;
-
 public class CommonFriendsTest {
 
-	@Test
+//	@Test
 	public void test() {
 		String test = "(1,3)\n(2,5)\n(3,5)\n(3,4)\n(2,4)";
 		

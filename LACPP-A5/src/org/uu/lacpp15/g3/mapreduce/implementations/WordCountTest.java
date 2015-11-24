@@ -1,15 +1,8 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import org.junit.Test;
-import org.uu.lacpp15.g3.mapreduce.framework.MapReduceInUtil;
 
 public class WordCountTest {
 
@@ -27,7 +20,7 @@ public class WordCountTest {
 		System.out.println(map.toString());
 	}
 	*/
-	@Test
+//	@Test
 	public void test() {
 		//4 test 1 test2 2 test3 1 test4
  		String text = "test test test2 test3 test test3 test test4";

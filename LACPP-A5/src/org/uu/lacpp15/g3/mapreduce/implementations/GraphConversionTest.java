@@ -1,24 +1,17 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
 
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import org.junit.Test;
-import org.uu.lacpp15.g3.mapreduce.framework.MapReduceInUtil;
 
 public class GraphConversionTest {
 
 	
 
 	
-	@Test
+//	@Test
 	public void test() {
 		//1 # 2 3
 		//2 # 1
