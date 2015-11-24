@@ -35,8 +35,8 @@ public class CommonFriends {
 		int mapper = 1;
 		int reducers = 1;
 		if (args.length > 3){
-			mapper = Integer.parseInt(args[3]);
-			reducers = Integer.parseInt(args[4]);
+			mapper = Integer.parseInt(args[2]);
+			reducers = Integer.parseInt(args[3]);
 		}
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);
