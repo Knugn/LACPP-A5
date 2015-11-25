@@ -98,6 +98,7 @@ public class ConcurrentKeyValueFilesEmitable<K,V> implements ConcurrentKeyValueE
 						}
 						curWriter.write(line);
 						curWriter.newLine();
+						curWriter.flush();
 						lineCount++;
 						if (lineCount >= keyValuePairsPerFile) {
 							curWriter.close();

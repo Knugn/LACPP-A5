@@ -26,6 +26,11 @@ public class MapReduceEngine {
 		this.reduceExecutor = Executors.newFixedThreadPool(nReducers);
 	}
 	
+	public void close() {
+		mapExecutor.shutdown();
+		reduceExecutor.shutdown();
+	}
+	
 	/**
 	 * Submits a job to run asynchronously from the calling thread. Two use case scenarios when you
 	 * would want to use this method are:
@@ -170,4 +175,6 @@ public class MapReduceEngine {
 		}
 		
 	}
+
+
 }

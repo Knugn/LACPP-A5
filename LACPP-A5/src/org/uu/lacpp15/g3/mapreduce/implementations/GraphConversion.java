@@ -16,6 +16,7 @@ import org.uu.lacpp15.g3.mapreduce.framework.MapReduceEngine;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceIn;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceInUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceJob;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceOut;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceOutUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
 import org.uu.lacpp15.g3.mapreduce.framework.PathGenerator;
@@ -41,25 +42,23 @@ public class GraphConversion {
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);
 		inputFIle.add(path2.toUri());
-
-		Map<Integer, List<String>> map = GraphConversion.run(MapReduceInUtil.fromFileLines(inputFIle), mapper,reducers);
-		//PrintWriter out = new PrintWriter("Conversion.txt");
-		MapReduceOutUtil.toFiles(new PathGenerator() {
+		MapReduceOut<Integer,String> output = MapReduceOutUtil.toFiles(new PathGenerator() {
 			
 			@Override
 			public Path next() {
 			
-				return Paths.get(args[1],"/commonFriends");
+				return Paths.get(args[1],"/GrapConversasion");
 			}
-		}, new KeyValueFormatter<String, List<String>>() {
+		}, new KeyValueFormatter<Integer, List<String>>() {
 
 			@Override
-			public String format(String key, List<String> value) {
+			public String format(Integer key, List<String> value) {
 				return value.get(0);
 			}
 		},0,null);
-		out.print(map.toString());
-		out.close();
+		GraphConversion.run(MapReduceInUtil.fromFileLines(inputFIle), mapper,reducers,output);
+		//PrintWriter out = new PrintWriter("Conversion.txt");
+
 	}
 
 	public static Map<Integer, List<String>> run(String text,int mapper,int reducers){
@@ -71,13 +70,23 @@ public class GraphConversion {
 		for (String string : inputText) {
 			map.put("" + keyNr++, string);
 		}
+		
+		ConcurrentHashMap<Integer, List<String>> outMap = new ConcurrentHashMap<>();
 
 
-		return run(MapReduceInUtil.fromConcurrentMap(map), mapper,reducers);
+		MapReduceJob<String, String, Integer, Integer, String> job = new MapReduceJob<>(
+				MapReduceInUtil.fromConcurrentMap(map), 
+				new GraphConversionMapper(),
+				new GraphConversionReducer(),
+				MapReduceOutUtil.toConcurrentMap(outMap));
+		MapReduceEngine engine = new MapReduceEngine(mapper, reducers);
+		engine.runJob(job);
+		engine.close();
+		return outMap;
 	}
 
-
-	public static Map<Integer, List<String>> run(MapReduceIn<String, String> map,int mapper,int reducers){
+	
+	public static Map<Integer, List<String>>  run(MapReduceIn<String, String> map,int mapper,int reducers){
 
 
 		ConcurrentHashMap<Integer, List<String>> outMap = new ConcurrentHashMap<>();
@@ -90,7 +99,20 @@ public class GraphConversion {
 				MapReduceOutUtil.toConcurrentMap(outMap));
 		MapReduceEngine engine = new MapReduceEngine(mapper, reducers);
 		engine.runJob(job);
+		engine.close();
 		return outMap;
+	}
+
+	public static void run(MapReduceIn<String, String> map,int mapper,int reducers,MapReduceOut<Integer,String> output){
+
+		MapReduceJob<String, String, Integer, Integer, String> job = new MapReduceJob<>(
+				map, 
+				new GraphConversionMapper(),
+				new GraphConversionReducer(),
+				output);
+		MapReduceEngine engine = new MapReduceEngine(mapper, reducers);
+		engine.runJob(job);
+		engine.close();
 	}
 
 

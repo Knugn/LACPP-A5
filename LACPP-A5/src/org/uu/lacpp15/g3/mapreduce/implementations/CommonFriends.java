@@ -16,6 +16,7 @@ import org.uu.lacpp15.g3.mapreduce.framework.MapReduceEngine;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceIn;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceInUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceJob;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceOut;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceOutUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
 import org.uu.lacpp15.g3.mapreduce.framework.PathGenerator;
@@ -43,9 +44,7 @@ public class CommonFriends {
 		Path path2 = Paths.get(filePath);
 		inputFIle.add(path2.toUri());
 
-		Map<String, List<String>> map = CommonFriends.run(MapReduceInUtil.fromFileLines(inputFIle), mapper,reducers);
-		//PrintWriter out = new PrintWriter("commonFriends.txt");
-		MapReduceOutUtil.toFiles(new PathGenerator() {
+		MapReduceOut<String, String> output = MapReduceOutUtil.toFiles(new PathGenerator() {
 			
 			@Override
 			public Path next() {
@@ -59,7 +58,11 @@ public class CommonFriends {
 				return value.get(0);
 			}
 		},0,null);
-		out.print(map.toString());
+		
+		CommonFriends.run(MapReduceInUtil.fromFileLines(inputFIle), mapper,reducers,output);
+		//PrintWriter out = new PrintWriter("commonFriends.txt");
+
+	//	out.print(map.toString());
 		out.close();
 	}
 
@@ -84,10 +87,11 @@ public class CommonFriends {
 				MapReduceOutUtil.toConcurrentMap(outMap));
 		MapReduceEngine engine = new MapReduceEngine(mapper, reducers);
 		engine.runJob(job);
+		engine.close();
 		return outMap;
 	}
 
-	public static Map<String, List<String>> run(MapReduceIn<String, String> inputMap, int mapper, int reducer){
+	public static void run(MapReduceIn<String, String> inputMap, int mapper, int reducer,MapReduceOut<String, String> output){
 
 		Map<Integer,List<String>> mapNegbours = GraphConversion.run(inputMap,mapper,reducer);
 		//System.out.println(mapNegbours);
@@ -97,17 +101,18 @@ public class CommonFriends {
 		}
 
 
-		ConcurrentHashMap<String, List<String>> outMap = new ConcurrentHashMap<>();
+		//ConcurrentHashMap<String, List<String>> outMap = new ConcurrentHashMap<>();
 
 
 		MapReduceJob<String, String, String, Integer, String> job = new MapReduceJob<>(
 				MapReduceInUtil.fromConcurrentMap(map), 
 				new GraphConversionMapper(),
 				new GraphConversionReducer(),
-				MapReduceOutUtil.toConcurrentMap(outMap));
+				output);
 		MapReduceEngine engine = new MapReduceEngine(mapper, reducer);
 		engine.runJob(job);
-		return outMap;
+		engine.close();
+		//return outMap;
 	}
 
 

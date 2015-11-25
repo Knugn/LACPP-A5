@@ -1,7 +1,6 @@
 package org.uu.lacpp15.g3.mapreduce.implementations;
 
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,6 +16,7 @@ import org.uu.lacpp15.g3.mapreduce.framework.MapReduceEngine;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceIn;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceInUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceJob;
+import org.uu.lacpp15.g3.mapreduce.framework.MapReduceOut;
 import org.uu.lacpp15.g3.mapreduce.framework.MapReduceOutUtil;
 import org.uu.lacpp15.g3.mapreduce.framework.Mapper;
 import org.uu.lacpp15.g3.mapreduce.framework.PathGenerator;
@@ -28,12 +28,12 @@ public class Triangles {
 	
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		run(args,System.out);
-		System.exit(0);
+		run(args);
+	//	System.exit(0);
 	}
 
 
-	public static void run(final String[] args, PrintStream out) throws FileNotFoundException {
+	public static void run(final String[] args) throws FileNotFoundException {
 		String filePath = args[0];
 		int mapper = 1;
 		int reducers = 1;
@@ -44,48 +44,47 @@ public class Triangles {
 		List<URI> inputFIle = new ArrayList<URI>();
 		Path path2 = Paths.get(filePath);
 		inputFIle.add(path2.toUri());
-		Map<Integer,List<Integer>> map = Triangles.run(MapReduceInUtil.fromFileLines(inputFIle),mapper,reducers);
-		//PrintWriter out = new PrintWriter("Triangles.txt");
-		MapReduceOutUtil.toFiles(new PathGenerator() {
+		MapReduceOut<Integer , Integer> output = MapReduceOutUtil.toFiles(new PathGenerator() {
 			
 			@Override
 			public Path next() {
 			
-				return Paths.get(args[1],"/commonFriends");
+				return Paths.get(args[1],"/Triangels.txt");
 			}
-		}, new KeyValueFormatter<String, List<String>>() {
+		}, new KeyValueFormatter<Integer, List<Integer>>() {
 
 			@Override
-			public String format(String key, List<String> value) {
-				return value.get(0);
+			public String format(Integer key, List<Integer> value) {
+				return key + " " + value.get(0);
 			}
 		},0,null);
-		out.print(map.toString());
-		out.close();
+
+
+		Triangles.run(MapReduceInUtil.fromFileLines(inputFIle),mapper,reducers,output);
+		//PrintWriter out = new PrintWriter("Triangles.txt");	
 	}
 	
-	public static Map<Integer, List<Integer>> run(MapReduceIn<String, String> inputMap, int mapper,int reducers){
+	public static void run(MapReduceIn<String, String> inputMap, int mapper,int reducers, MapReduceOut<Integer , Integer> output){
 
 
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();	
 		Map<Integer,List<String>> mapNegbours = GraphConversion.run(inputMap,mapper,reducers);
 
-		System.out.println(mapNegbours);
+
+
 		for (Map.Entry<Integer,List<String>> entry : mapNegbours.entrySet()) {
 			map.put(entry.getKey().toString(), entry.getValue().get(0));
 		}
-
-		ConcurrentHashMap<Integer, List<Integer>> outMap = new ConcurrentHashMap<>();
 
 
 		MapReduceJob<String, String, Integer, int[], Integer> job = new MapReduceJob<>(
 				MapReduceInUtil.fromConcurrentMap(map), 
 				new GraphTrianglesMapper(),
 				new GraphTrianglesReducer(),
-				MapReduceOutUtil.toConcurrentMap(outMap));
+				output);
 		MapReduceEngine engine = new MapReduceEngine(mapper,reducers);
 		engine.runJob(job);
-		return outMap;
+		engine.close();
 	}
 
 	public static Map<Integer, List<Integer>> run(String text, int mapper,int reducers){
@@ -107,6 +106,7 @@ public class Triangles {
 				MapReduceOutUtil.toConcurrentMap(outMap));
 		MapReduceEngine engine = new MapReduceEngine(mapper,reducers);
 		engine.runJob(job);
+		engine.close();
 		return outMap;
 	}
 
