@@ -52,4 +52,35 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
+    <target name="AllTest">
+        <java classname="org.uu.lacpp15.g3.mapreduce.implementations.AllTest" failonerror="true" fork="yes">
+            <jvmarg line="-ea"/>
+            <arg line="graph1.txt ./ 10 10"/>
+            <classpath refid="LACPP-A5.classpath"/>
+        </java>
+    </target>
+    <target name="CommonFriends">
+        <java classname="org.uu.lacpp15.g3.mapreduce.implementations.CommonFriends" failonerror="true" fork="yes">
+            <arg line="src/org/uu/lacpp15/g3/mapreduce/resoucre/graph1.txt ./ 10 10"/>
+            <classpath refid="LACPP-A5.classpath"/>
+        </java>
+    </target>
+    <target name="GraphConversion">
+        <java classname="org.uu.lacpp15.g3.mapreduce.implementations.GraphConversion" failonerror="true" fork="yes">
+            <arg line="src/org/uu/lacpp15/g3/mapreduce/resoucre/graph1.txt ./ 10 10"/>
+            <classpath refid="LACPP-A5.classpath"/>
+        </java>
+    </target>
+    <target name="Triangles">
+        <java classname="org.uu.lacpp15.g3.mapreduce.implementations.Triangles" failonerror="true" fork="yes">
+            <arg line="src/org/uu/lacpp15/g3/mapreduce/resoucre/graph1.txt ./ 10 10"/>
+            <classpath refid="LACPP-A5.classpath"/>
+        </java>
+    </target>
+    <target name="WordCount">
+        <java classname="org.uu.lacpp15.g3.mapreduce.implementations.WordCount" failonerror="true" fork="yes">
+            <arg line="src/org/uu/lacpp15/g3/mapreduce/resoucre/graph1.txt ./ 10 10"/>
+            <classpath refid="LACPP-A5.classpath"/>
+        </java>
+    </target>
 </project>
